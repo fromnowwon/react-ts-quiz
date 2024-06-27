@@ -1,10 +1,11 @@
-import { ArrowBigRight } from "lucide-react";
+import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { throttledFetchQuestions } from "./API";
 import { useState } from "react";
 import { Difficulty, Question, UserAnswer } from "./types/Question";
 import QuestionCard from "./components/QuestionCard";
+import ResultPopup from "./components/ResultPopup";
 
-const TOTAL_QUESTIONS = 10;
+const TOTAL_QUESTIONS = 3;
 
 function App() {
 	const [questions, setQuestions] = useState<Question[]>([]);
@@ -13,6 +14,12 @@ function App() {
 	const [score, setScore] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
 	const [finish, setFinish] = useState(false);
+	const [selectedState, setSelectedState] = useState<boolean[]>(() =>
+		Array.from({ length: TOTAL_QUESTIONS }, () => false)
+	);
+	const [scores, setScores] = useState<number[]>(() =>
+		Array.from({ length: TOTAL_QUESTIONS }, () => 0)
+	);
 
 	const startQuiz = async () => {
 		setLoading(true);
@@ -39,7 +46,19 @@ function App() {
 			const correctAnswer = questions[questionNum].correct_answer;
 			const correct = selectedAnswer === correctAnswer;
 
-			if (correct) setScore((prevScore) => prevScore + 1);
+			setSelectedState((prevSelected) => {
+				const updatedSelected = [...prevSelected];
+				updatedSelected[questionNum] = true;
+				return updatedSelected;
+			});
+
+			if (correct) {
+				setScores((prevScores) => {
+					const updatedScores = [...prevScores];
+					updatedScores[questionNum] = 1;
+					return updatedScores;
+				});
+			}
 
 			const updatedAnswers = [...userAnswers];
 			updatedAnswers[questionNum] = {
@@ -56,7 +75,12 @@ function App() {
 	const nextQuestion = () => {
 		if (questionNum < TOTAL_QUESTIONS - 1)
 			setQuestionNum((prevNum) => prevNum + 1);
-		else setFinish(true);
+	};
+
+	const prevQuestion = () => {
+		if (questionNum > 0) {
+			setQuestionNum((prevNum) => prevNum - 1);
+		}
 	};
 
 	const submitQuiz = () => {
@@ -72,7 +96,6 @@ function App() {
 				</button>
 			)}
 
-			{!finish && <p>Score: {score}</p>}
 			{loading && <p>퀴즈 불러오는 중...</p>}
 			{!loading && questions.length > 0 && !finish && (
 				<QuestionCard
@@ -83,12 +106,20 @@ function App() {
 					checkAnswer={checkAnswer}
 				/>
 			)}
+
+			{!loading && questionNum > 0 && (
+				<button onClick={prevQuestion} className="prev-btn">
+					이전
+					<ArrowBigLeft />
+				</button>
+			)}
+
 			{!loading &&
+				userAnswers.length > 0 &&
 				!finish &&
-				userAnswers.length === questionNum + 1 &&
 				TOTAL_QUESTIONS > questionNum + 1 && (
 					<button onClick={nextQuestion} className="next-btn">
-						NEXT QUESTION
+						다음
 						<ArrowBigRight />
 					</button>
 				)}
@@ -98,9 +129,12 @@ function App() {
 				userAnswers.length === questionNum + 1 &&
 				TOTAL_QUESTIONS === questionNum + 1 && (
 					<button onClick={submitQuiz} className="submit-btn">
-						SUBMIT
+						제출
 					</button>
 				)}
+			{!loading && finish && (
+				<ResultPopup scores={scores} totalQuestions={TOTAL_QUESTIONS} />
+			)}
 		</main>
 	);
 }
