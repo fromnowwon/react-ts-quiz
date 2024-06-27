@@ -1,3 +1,4 @@
+import { throttle } from "lodash";
 import { Difficulty, Question } from "./types/Question";
 
 export const fetchQuestions = async (
@@ -15,3 +16,8 @@ export const fetchQuestions = async (
 
 	return questions;
 };
+
+export const throttledFetchQuestions = throttle(fetchQuestions, 60000, {
+	leading: true, // 처음 호출 즉시 실행
+	trailing: false, // 마지막 호출을 무시
+});
