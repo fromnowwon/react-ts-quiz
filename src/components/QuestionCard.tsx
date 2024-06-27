@@ -3,6 +3,7 @@ interface QuestionCardProps {
 	totalQuestions: number;
 	question: string;
 	answers: string[];
+	checkAnswer: (e: React.MouseEvent<HTMLInputElement>) => void;
 }
 
 const QuestionCard: React.FC<QuestionCardProps> = ({
@@ -10,7 +11,12 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 	totalQuestions,
 	question,
 	answers,
+	checkAnswer,
 }) => {
+	const handleClickAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
+		checkAnswer(e);
+	};
+
 	return (
 		<div>
 			<p className="quiz-num">
@@ -19,9 +25,10 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 			<p dangerouslySetInnerHTML={{ __html: question }}></p>
 			<div>
 				{answers.map((answer, idx) => (
-					<button key={answer}>
-						{idx + 1}.<span dangerouslySetInnerHTML={{ __html: answer }}></span>
-					</button>
+					<label key={answer}>
+						<span>{idx + 1}.</span>
+						<input type="button" onClick={handleClickAnswer} value={answer} />
+					</label>
 				))}
 			</div>
 		</div>
