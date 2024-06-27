@@ -34,22 +34,23 @@ function App() {
 	};
 
 	const checkAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
-		const selectedAnswer = e.currentTarget.value;
-		const correctAnswer = questions[questionNum].correct_answer;
-		const correct = selectedAnswer === correctAnswer;
+		if (!finish) {
+			const selectedAnswer = e.currentTarget.value;
+			const correctAnswer = questions[questionNum].correct_answer;
+			const correct = selectedAnswer === correctAnswer;
 
-		if (correct) {
-			setScore((prevScore) => prevScore + 1);
+			if (correct) setScore((prevScore) => prevScore + 1);
+
+			const updatedAnswers = [...userAnswers];
+			updatedAnswers[questionNum] = {
+				question: questions[questionNum].question,
+				selectedAnswer,
+				correct,
+				correctAnswer: questions[questionNum].correct_answer,
+			};
+
+			setUserAnswers(updatedAnswers);
 		}
-
-		const userAnswersObject: UserAnswer = {
-			question: questions[questionNum].question,
-			selectedAnswer,
-			correct,
-			correctAnswer: questions[questionNum].correct_answer,
-		};
-
-		setUserAnswers((prevAnswer) => [...prevAnswer, userAnswersObject]);
 	};
 
 	const nextQuestion = () => {
