@@ -1,3 +1,5 @@
+import { filterHtml } from "../util";
+
 interface QuestionCardProps {
 	questionNum: number;
 	totalQuestions: number;
@@ -22,12 +24,16 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 			<p className="quiz-num">
 				{questionNum + 1} / {totalQuestions}
 			</p>
-			<p dangerouslySetInnerHTML={{ __html: question }}></p>
+			<p>{filterHtml(question)}</p>
 			<div>
 				{answers.map((answer, idx) => (
 					<label key={answer}>
 						<span>{idx + 1}.</span>
-						<input type="button" onClick={handleClickAnswer} value={answer} />
+						<input
+							type="button"
+							onClick={handleClickAnswer}
+							value={filterHtml(answer)}
+						/>
 					</label>
 				))}
 			</div>
