@@ -54,8 +54,13 @@ function App() {
 	};
 
 	const nextQuestion = () => {
-		if (questionNum === TOTAL_QUESTIONS) setFinish(true);
-		else setQuestionNum((prevNum) => prevNum + 1);
+		if (questionNum < TOTAL_QUESTIONS - 1)
+			setQuestionNum((prevNum) => prevNum + 1);
+		else setFinish(true);
+	};
+
+	const submitQuiz = () => {
+		setFinish(true);
 	};
 
 	return (
@@ -81,10 +86,19 @@ function App() {
 			{!loading &&
 				!finish &&
 				userAnswers.length === questionNum + 1 &&
-				questionNum !== TOTAL_QUESTIONS - 1 && (
+				TOTAL_QUESTIONS > questionNum + 1 && (
 					<button onClick={nextQuestion} className="next-btn">
 						NEXT QUESTION
 						<ArrowBigRight />
+					</button>
+				)}
+
+			{!loading &&
+				!finish &&
+				userAnswers.length === questionNum + 1 &&
+				TOTAL_QUESTIONS === questionNum + 1 && (
+					<button onClick={submitQuiz} className="submit-btn">
+						SUBMIT
 					</button>
 				)}
 		</main>
