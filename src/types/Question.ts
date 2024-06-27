@@ -4,6 +4,7 @@ export type Question = {
 	difficulty: Difficulty;
 	incorrect_answers: string[];
 	question: string;
+	answers: string[];
 	type: string;
 };
 

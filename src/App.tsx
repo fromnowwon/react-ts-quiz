@@ -34,7 +34,12 @@ function App() {
 				START
 			</button>
 			{!loading && questions.length > 0 && (
-				<QuestionCard question={questions[questionNum].question} />
+				<QuestionCard
+					questionNum={questionNum}
+					totalQuestions={TOTAL_QUESTIONS}
+					question={questions[questionNum].question}
+					answers={questions[questionNum].answers}
+				/>
 			)}
 			<button className="next-btn">
 				NEXT QUESTION
