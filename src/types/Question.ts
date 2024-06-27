@@ -3,7 +3,7 @@ export type Question = {
 	correct_answer: string;
 	difficulty: Difficulty;
 	incorrect_answers: string[];
-	questions: string;
+	question: string;
 	type: string;
 };
 

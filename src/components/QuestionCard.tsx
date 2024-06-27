@@ -1,8 +1,12 @@
-const QuestionCard = () => {
+interface QuestionCardProps {
+	question: string;
+}
+
+const QuestionCard: React.FC<QuestionCardProps> = ({ question }) => {
 	return (
 		<div>
 			<p className="quiz-num"></p>
-			<div></div>
+			<p>{question}</p>
 		</div>
 	);
 };
