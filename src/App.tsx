@@ -12,6 +12,7 @@ function App() {
 	const [loading, setLoading] = useState(false);
 	const [score, setScore] = useState(0);
 	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
+	const [finish, setFinish] = useState(false);
 
 	const startQuiz = async () => {
 		setLoading(true);
@@ -50,7 +51,8 @@ function App() {
 	};
 
 	const nextQuestion = () => {
-		setQuestionNum((prevNum) => prevNum + 1);
+		if (questionNum === TOTAL_QUESTIONS) setFinish(true);
+		else setQuestionNum((prevNum) => prevNum + 1);
 	};
 
 	return (
@@ -60,7 +62,7 @@ function App() {
 				START
 			</button>
 			<p>Score: {score}</p>
-			{!loading && questions.length > 0 && (
+			{!loading && questions.length > 0 && !finish && (
 				<QuestionCard
 					questionNum={questionNum}
 					totalQuestions={TOTAL_QUESTIONS}
