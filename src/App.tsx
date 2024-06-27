@@ -67,6 +67,7 @@ function App() {
 			)}
 
 			{!finish && <p>Score: {score}</p>}
+			{loading && <p>퀴즈 불러오는 중...</p>}
 			{!loading && questions.length > 0 && !finish && (
 				<QuestionCard
 					questionNum={questionNum}
