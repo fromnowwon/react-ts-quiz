@@ -1,5 +1,6 @@
 import { throttle } from "lodash";
 import { Difficulty, Question } from "./types/Question";
+import { shuffleArray } from "./util";
 
 export const fetchQuestions = async (
 	amount: number,
@@ -9,8 +10,14 @@ export const fetchQuestions = async (
 	const response = await fetch(endpoint);
 	const data = await response.json();
 	const questions = data.results.map((question: Question) => {
+		const answers = shuffleArray([
+			...question.incorrect_answers,
+			question.correct_answer,
+		]);
+
 		return {
 			...question,
+			answers,
 		};
 	});
 
