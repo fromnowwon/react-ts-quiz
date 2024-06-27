@@ -16,11 +16,11 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 			<p className="quiz-num">
 				{questionNum + 1} / {totalQuestions}
 			</p>
-			<p>{question}</p>
+			<p dangerouslySetInnerHTML={{ __html: question }}></p>
 			<div>
 				{answers.map((answer, idx) => (
 					<button key={answer}>
-						{idx + 1}. {answer}
+						{idx + 1}.<span dangerouslySetInnerHTML={{ __html: answer }}></span>
 					</button>
 				))}
 			</div>
