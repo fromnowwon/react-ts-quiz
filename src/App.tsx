@@ -25,10 +25,12 @@ function App() {
 			console.log(newQuestions);
 		} catch (error) {
 			console.error("Error fetching questions:", error);
+		} finally {
+			setQuestionNum(0);
+			setScore(0);
+			setLoading(false);
+			setFinish(false);
 		}
-		setQuestionNum(0);
-		setScore(0);
-		setLoading(false);
 	};
 
 	const checkAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
@@ -58,10 +60,13 @@ function App() {
 	return (
 		<main>
 			<h1>REACT QUIZ</h1>
-			<button className="start-btn" onClick={startQuiz}>
-				START
-			</button>
-			<p>Score: {score}</p>
+			{!(questions.length > 0) && !loading && !finish && (
+				<button className="start-btn" onClick={startQuiz}>
+					START
+				</button>
+			)}
+
+			{!finish && <p>Score: {score}</p>}
 			{!loading && questions.length > 0 && !finish && (
 				<QuestionCard
 					questionNum={questionNum}
@@ -71,10 +76,15 @@ function App() {
 					checkAnswer={checkAnswer}
 				/>
 			)}
-			<button onClick={nextQuestion} className="next-btn">
-				NEXT QUESTION
-				<ArrowBigRight />
-			</button>
+			{!loading &&
+				!finish &&
+				userAnswers.length === questionNum + 1 &&
+				questionNum !== TOTAL_QUESTIONS - 1 && (
+					<button onClick={nextQuestion} className="next-btn">
+						NEXT QUESTION
+						<ArrowBigRight />
+					</button>
+				)}
 		</main>
 	);
 }
