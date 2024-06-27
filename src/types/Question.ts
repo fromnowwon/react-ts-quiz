@@ -14,7 +14,7 @@ export enum Difficulty {
 	HARD = "hard",
 }
 
-export type UserAnswer = {
+export type UserState = {
 	question: string;
 	selectedAnswer: string;
 	correct: boolean;

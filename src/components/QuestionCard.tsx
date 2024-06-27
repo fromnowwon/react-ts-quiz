@@ -27,7 +27,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 			<p>{filterHtml(question)}</p>
 			<div>
 				{answers.map((answer, idx) => (
-					<label key={answer}>
+					<label key={idx}>
 						<span>{idx + 1}.</span>
 						<input
 							type="button"

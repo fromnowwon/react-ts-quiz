@@ -1,7 +1,7 @@
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { throttledFetchQuestions } from "./API";
 import { useState } from "react";
-import { Difficulty, Question, UserAnswer } from "./types/Question";
+import { Difficulty, Question, UserState } from "./types/Question";
 import QuestionCard from "./components/QuestionCard";
 import ResultPopup from "./components/ResultPopup";
 
@@ -11,14 +11,14 @@ function App() {
 	const [questions, setQuestions] = useState<Question[]>([]);
 	const [questionNum, setQuestionNum] = useState(0);
 	const [loading, setLoading] = useState(false);
-	const [score, setScore] = useState(0);
-	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
+	const [userState, setUserState] = useState<UserState[]>([]);
 	const [finish, setFinish] = useState(false);
-	const [selectedState, setSelectedState] = useState<boolean[]>(() =>
-		Array.from({ length: TOTAL_QUESTIONS }, () => false)
-	);
+	const [errorMessage, setErrorMessage] = useState("");
 	const [scores, setScores] = useState<number[]>(() =>
 		Array.from({ length: TOTAL_QUESTIONS }, () => 0)
+	);
+	const [answered, setAnswered] = useState(() =>
+		Array.from({ length: TOTAL_QUESTIONS }, () => false)
 	);
 
 	const startQuiz = async () => {
@@ -29,14 +29,14 @@ function App() {
 				Difficulty.EASY
 			);
 			setQuestions(newQuestions);
-			console.log(newQuestions);
 		} catch (error) {
 			console.error("Error fetching questions:", error);
 		} finally {
 			setQuestionNum(0);
-			setScore(0);
 			setLoading(false);
 			setFinish(false);
+			setScores(Array.from({ length: TOTAL_QUESTIONS }, () => 0));
+			setErrorMessage("");
 		}
 	};
 
@@ -46,11 +46,17 @@ function App() {
 			const correctAnswer = questions[questionNum].correct_answer;
 			const correct = selectedAnswer === correctAnswer;
 
-			setSelectedState((prevSelected) => {
-				const updatedSelected = [...prevSelected];
-				updatedSelected[questionNum] = true;
-				return updatedSelected;
-			});
+			const updatedAnswered = [...answered];
+			updatedAnswered[questionNum] = true;
+			setAnswered(updatedAnswered);
+
+			const updatedUserState = [...userState];
+			updatedUserState[questionNum] = {
+				question: questions[questionNum].question,
+				selectedAnswer,
+				correct,
+				correctAnswer: questions[questionNum].correct_answer,
+			};
 
 			if (correct) {
 				setScores((prevScores) => {
@@ -60,15 +66,7 @@ function App() {
 				});
 			}
 
-			const updatedAnswers = [...userAnswers];
-			updatedAnswers[questionNum] = {
-				question: questions[questionNum].question,
-				selectedAnswer,
-				correct,
-				correctAnswer: questions[questionNum].correct_answer,
-			};
-
-			setUserAnswers(updatedAnswers);
+			setUserState(updatedUserState);
 		}
 	};
 
@@ -78,12 +76,26 @@ function App() {
 	};
 
 	const prevQuestion = () => {
+		setErrorMessage("");
 		if (questionNum > 0) {
 			setQuestionNum((prevNum) => prevNum - 1);
 		}
 	};
 
 	const submitQuiz = () => {
+		const unanswered = answered.reduce((acc: number[], curr, index) => {
+			if (!curr) {
+				acc.push(index + 1);
+			}
+			return acc;
+		}, []);
+
+		if (answered.includes(false)) {
+			return setErrorMessage(
+				`다음 문제에 대한 답변을 선택하세요: ${unanswered.join(", ")}`
+			);
+		}
+
 		setFinish(true);
 	};
 
@@ -107,7 +119,7 @@ function App() {
 				/>
 			)}
 
-			{!loading && questionNum > 0 && (
+			{!loading && !finish && questionNum > 0 && (
 				<button onClick={prevQuestion} className="prev-btn">
 					이전
 					<ArrowBigLeft />
@@ -115,7 +127,7 @@ function App() {
 			)}
 
 			{!loading &&
-				userAnswers.length > 0 &&
+				questions.length > 0 &&
 				!finish &&
 				TOTAL_QUESTIONS > questionNum + 1 && (
 					<button onClick={nextQuestion} className="next-btn">
@@ -124,16 +136,14 @@ function App() {
 					</button>
 				)}
 
-			{!loading &&
-				!finish &&
-				userAnswers.length === questionNum + 1 &&
-				TOTAL_QUESTIONS === questionNum + 1 && (
-					<button onClick={submitQuiz} className="submit-btn">
-						제출
-					</button>
-				)}
+			{!loading && !finish && TOTAL_QUESTIONS === questionNum + 1 && (
+				<button onClick={submitQuiz} className="submit-btn">
+					제출
+				</button>
+			)}
+			{errorMessage && <p>{errorMessage}</p>}
 			{!loading && finish && (
-				<ResultPopup scores={scores} totalQuestions={TOTAL_QUESTIONS} />
+				<ResultPopup scores={scores} userState={userState} />
 			)}
 		</main>
 	);
