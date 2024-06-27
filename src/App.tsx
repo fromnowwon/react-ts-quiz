@@ -1,7 +1,7 @@
 import { ArrowBigRight } from "lucide-react";
 import { throttledFetchQuestions } from "./API";
 import { useState } from "react";
-import { Difficulty, Question } from "./types/Question";
+import { Difficulty, Question, UserAnswer } from "./types/Question";
 import QuestionCard from "./components/QuestionCard";
 
 const TOTAL_QUESTIONS = 10;
@@ -11,6 +11,7 @@ function App() {
 	const [questionNum, setQuestionNum] = useState(0);
 	const [loading, setLoading] = useState(false);
 	const [score, setScore] = useState(0);
+	const [userAnswers, setUserAnswers] = useState<UserAnswer[]>([]);
 
 	const startQuiz = async () => {
 		setLoading(true);
@@ -32,9 +33,24 @@ function App() {
 	const checkAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
 		const selectedAnswer = e.currentTarget.value;
 		const correctAnswer = questions[questionNum].correct_answer;
+		const correct = selectedAnswer === correctAnswer;
 
-		if (selectedAnswer === correctAnswer)
+		if (correct) {
 			setScore((prevScore) => prevScore + 1);
+		}
+
+		const userAnswersObject: UserAnswer = {
+			question: questions[questionNum].question,
+			selectedAnswer,
+			correct,
+			correctAnswer: questions[questionNum].correct_answer,
+		};
+
+		setUserAnswers((prevAnswer) => [...prevAnswer, userAnswersObject]);
+	};
+
+	const nextQuestion = () => {
+		setQuestionNum((prevNum) => prevNum + 1);
 	};
 
 	return (
@@ -53,7 +69,7 @@ function App() {
 					checkAnswer={checkAnswer}
 				/>
 			)}
-			<button className="next-btn">
+			<button onClick={nextQuestion} className="next-btn">
 				NEXT QUESTION
 				<ArrowBigRight />
 			</button>

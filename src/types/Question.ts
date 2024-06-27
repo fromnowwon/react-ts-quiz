@@ -13,3 +13,10 @@ export enum Difficulty {
 	MEDIUM = "medium",
 	HARD = "hard",
 }
+
+export type UserAnswer = {
+	question: string;
+	selectedAnswer: string;
+	correct: boolean;
+	correctAnswer: string;
+};
