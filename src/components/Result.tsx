@@ -1,6 +1,7 @@
 import { ArrowLeft, Dot, PartyPopper } from "lucide-react";
 import { UserState } from "../types/Question";
 import { filterHtml } from "../util";
+import { useEffect, useState } from "react";
 
 interface ResultProps {
 	scores: number[];
@@ -15,7 +16,12 @@ const Result: React.FC<ResultProps> = ({
 	restartQuiz,
 	retryQuiz,
 }) => {
-	const totalScore = scores.reduce((acc, curr) => acc + curr);
+	const [totalScore, setTotalScore] = useState(0);
+
+	useEffect(() => {
+		setTotalScore(scores.reduce((acc, curr) => acc + curr));
+	}, [scores]);
+
 	const handleRetryQuiz = () => {
 		retryQuiz();
 	};
