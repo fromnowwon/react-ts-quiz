@@ -1,17 +1,22 @@
+import { PartyPopper } from "lucide-react";
 import { UserState } from "../types/Question";
 import { filterHtml } from "../util";
 
-interface ResultPopupProps {
+interface ResultProps {
 	scores: number[];
 	userState: UserState[];
 }
 
-const ResultPopup: React.FC<ResultPopupProps> = ({ scores, userState }) => {
+const Result: React.FC<ResultProps> = ({ scores, userState }) => {
 	const totalScore = scores.reduce((acc, curr) => acc + curr);
 
 	return (
 		<div>
-			<h2>결과</h2>
+			<h2>
+				<PartyPopper />
+				결과
+				<PartyPopper />
+			</h2>
 			{userState.map((answer, idx) => (
 				<li key={idx}>
 					<p>
@@ -26,4 +31,4 @@ const ResultPopup: React.FC<ResultPopupProps> = ({ scores, userState }) => {
 	);
 };
 
-export default ResultPopup;
+export default Result;

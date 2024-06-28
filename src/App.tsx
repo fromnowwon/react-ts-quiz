@@ -1,9 +1,13 @@
-import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
+import {
+	ArrowLeftCircleIcon,
+	ArrowRightCircleIcon,
+	EditIcon,
+} from "lucide-react";
 import { throttledFetchQuestions } from "./API";
 import { useState } from "react";
 import { Difficulty, Question, UserState } from "./types/Question";
 import QuestionCard from "./components/QuestionCard";
-import ResultPopup from "./components/ResultPopup";
+import Result from "./components/Result";
 
 const TOTAL_QUESTIONS = 3;
 
@@ -93,72 +97,106 @@ function App() {
 
 		if (answered.includes(false)) {
 			return setErrorMessage(
-				`다음 문제에 대한 답변을 선택하세요: ${unanswered.join(", ")}`
+				`다음 문제에 대한 답변을 선택하세요: ${unanswered
+					.map((un) => `${un}번`)
+					.join(", ")}`
 			);
 		}
 
 		setFinish(true);
 	};
 
-	const selectDifficulty = (level: Difficulty) => {
-		setLevel(level);
+	const selectDifficulty = (lv: Difficulty) => {
+		setLevel(lv);
 	};
 
 	return (
-		<main>
-			<h1>REACT QUIZ</h1>
+		<main className="py-10 h-screen space-y-5">
+			<h1 className="font-bold text-3xl text-center">REACT QUIZ</h1>
 
-			{!(questions.length > 0) && !loading && !finish && (
-				<div>
-					<div>
-						<h2>난이도를 선택하세요</h2>
-						{Object.values(Difficulty).map((level: Difficulty) => (
-							<button onClick={() => selectDifficulty(level)}>{level}</button>
-						))}
+			<div className="max-w-lg mx-auto bg-slate-100 rounded-md p-5">
+				{!(questions.length > 0) && !loading && !finish && (
+					<div className="text-center">
+						<div className="flex items-center justify-center">
+							{Object.values(Difficulty).map((lv: Difficulty) => (
+								<button
+									className={`font-bold mx-3 hover:underline underline-offset-4 ${
+										level === lv ? "underline" : ""
+									}`}
+									onClick={() => selectDifficulty(lv)}
+								>
+									{lv.toUpperCase()}
+								</button>
+							))}
+						</div>
+						<button
+							className="mt-5 w-20 rounded-md bg-slate-900 text-white hover:bg-slate-800"
+							onClick={startQuiz}
+						>
+							START
+						</button>
 					</div>
-					<button className="start-btn" onClick={startQuiz}>
-						START
-					</button>
-				</div>
-			)}
-
-			{loading && <p>퀴즈 불러오는 중...</p>}
-			{!loading && questions.length > 0 && !finish && (
-				<QuestionCard
-					questionNum={questionNum}
-					totalQuestions={TOTAL_QUESTIONS}
-					question={questions[questionNum].question}
-					answers={questions[questionNum].answers}
-					checkAnswer={checkAnswer}
-				/>
-			)}
-
-			{!loading && !finish && questionNum > 0 && (
-				<button onClick={prevQuestion} className="prev-btn">
-					이전
-					<ArrowBigLeft />
-				</button>
-			)}
-
-			{!loading &&
-				questions.length > 0 &&
-				!finish &&
-				TOTAL_QUESTIONS > questionNum + 1 && (
-					<button onClick={nextQuestion} className="next-btn">
-						다음
-						<ArrowBigRight />
-					</button>
 				)}
 
-			{!loading && !finish && TOTAL_QUESTIONS === questionNum + 1 && (
-				<button onClick={submitQuiz} className="submit-btn">
-					제출
-				</button>
-			)}
-			{errorMessage && <p>{errorMessage}</p>}
-			{!loading && finish && (
-				<ResultPopup scores={scores} userState={userState} />
-			)}
+				{loading && <p className="text-center">퀴즈 불러오는 중...</p>}
+				{!loading && questions.length > 0 && !finish && (
+					<QuestionCard
+						questionNum={questionNum}
+						totalQuestions={TOTAL_QUESTIONS}
+						question={questions[questionNum].question}
+						answers={questions[questionNum].answers}
+						checkAnswer={checkAnswer}
+						userState={userState}
+					/>
+				)}
+
+				<div className="flex justify-between items-center mt-4 pt-3 border-t-2 border-gray-200">
+					<div className="my-3 flex gap-3">
+						{!loading && !finish && questions.length > 0 && (
+							<button
+								onClick={prevQuestion}
+								disabled={questionNum === 0 ? true : false}
+								className={`text-sm ${
+									questionNum === 0 ? "text-gray-400" : "text-gray-800"
+								}`}
+							>
+								<ArrowLeftCircleIcon />
+							</button>
+						)}
+
+						{!loading && !finish && questions.length > 0 && (
+							<button
+								onClick={nextQuestion}
+								disabled={questionNum + 1 === questions.length ? true : false}
+								className={`text-sm ${
+									questionNum + 1 === questions.length
+										? "text-gray-400"
+										: "text-gray-800"
+								}`}
+							>
+								<ArrowRightCircleIcon />
+							</button>
+						)}
+					</div>
+					<div>
+						{!loading && !finish && TOTAL_QUESTIONS === questionNum + 1 && (
+							<button
+								onClick={submitQuiz}
+								className="flex items-center text-sm"
+							>
+								<span className="font-bold">제출</span>
+								<EditIcon className="scale-75" />
+							</button>
+						)}
+					</div>
+				</div>
+				{errorMessage && (
+					<p className="font-bold text-sm text-right text-red-500">
+						{errorMessage}
+					</p>
+				)}
+			</div>
+			{!loading && finish && <Result scores={scores} userState={userState} />}
 		</main>
 	);
 }
