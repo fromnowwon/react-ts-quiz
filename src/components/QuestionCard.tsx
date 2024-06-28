@@ -56,7 +56,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 								type="button"
 								onClick={handleClickAnswer}
 								value={filterHtml(answer)}
-								className={`inline-block text-wrap text-left ${
+								className={`inline-block cursor-pointer text-wrap text-left ${
 									selectedAnswerIdx === idx
 										? "hover:underline underline-offset-4"
 										: "hover:underline"

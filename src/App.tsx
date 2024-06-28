@@ -150,53 +150,54 @@ function App() {
 					/>
 				)}
 
-				<div className="flex justify-between items-center mt-4 pt-3 border-t-2 border-gray-200">
-					<div className="my-3 flex gap-3">
-						{!loading && !finish && questions.length > 0 && (
-							<button
-								onClick={prevQuestion}
-								disabled={questionNum === 0 ? true : false}
-								className={`text-sm ${
-									questionNum === 0 ? "text-gray-400" : "text-gray-800"
-								}`}
-							>
-								<ArrowLeftCircleIcon />
-							</button>
-						)}
-
-						{!loading && !finish && questions.length > 0 && (
-							<button
-								onClick={nextQuestion}
-								disabled={questionNum + 1 === questions.length ? true : false}
-								className={`text-sm ${
-									questionNum + 1 === questions.length
-										? "text-gray-400"
-										: "text-gray-800"
-								}`}
-							>
-								<ArrowRightCircleIcon />
-							</button>
-						)}
-					</div>
+				{!loading && !finish && questions.length > 0 && (
 					<div>
-						{!loading && !finish && TOTAL_QUESTIONS === questionNum + 1 && (
-							<button
-								onClick={submitQuiz}
-								className="flex items-center text-sm"
-							>
-								<span className="font-bold">제출</span>
-								<EditIcon className="scale-75" />
-							</button>
+						<div className="flex justify-between items-center mt-4 pt-3 border-t-2 border-gray-200">
+							<div className="my-3 flex gap-3">
+								<button
+									onClick={prevQuestion}
+									disabled={questionNum === 0 ? true : false}
+									className={`text-sm ${
+										questionNum === 0 ? "text-gray-400" : "text-gray-800"
+									}`}
+								>
+									<ArrowLeftCircleIcon />
+								</button>
+
+								<button
+									onClick={nextQuestion}
+									disabled={questionNum + 1 === questions.length ? true : false}
+									className={`text-sm ${
+										questionNum + 1 === questions.length
+											? "text-gray-400"
+											: "text-gray-800"
+									}`}
+								>
+									<ArrowRightCircleIcon />
+								</button>
+							</div>
+							<div>
+								{TOTAL_QUESTIONS === questionNum + 1 && (
+									<button
+										onClick={submitQuiz}
+										className="flex items-center text-sm"
+									>
+										<span className="font-bold">제출</span>
+										<EditIcon className="scale-75" />
+									</button>
+								)}
+							</div>
+						</div>
+
+						{errorMessage && (
+							<p className="font-bold text-sm text-right text-red-500">
+								{errorMessage}
+							</p>
 						)}
 					</div>
-				</div>
-				{errorMessage && (
-					<p className="font-bold text-sm text-right text-red-500">
-						{errorMessage}
-					</p>
 				)}
+				{!loading && finish && <Result scores={scores} userState={userState} />}
 			</div>
-			{!loading && finish && <Result scores={scores} userState={userState} />}
 		</main>
 	);
 }
