@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from "react";
 import { filterHtml } from "../util";
 import { CheckCircle } from "lucide-react";
 import { UserState } from "../types/Question";
@@ -20,25 +19,8 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 	checkAnswer,
 	userState,
 }) => {
-	const [selectedAnswerIdx, setSelectedAnswerIdx] = useState<number | null>(
-		null
-	);
-
-	useEffect(() => {
-		if (userState[questionNum]?.selectedAnswer !== undefined) {
-			const idx = answers.findIndex(
-				(answer) => answer === userState[questionNum]?.selectedAnswer
-			);
-			setSelectedAnswerIdx(idx);
-		} else {
-			setSelectedAnswerIdx(null);
-		}
-	}, [questionNum, answers, userState]);
-
 	const handleClickAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
 		checkAnswer(e);
-		const idx = parseInt(e.currentTarget.dataset.idx || "", 10);
-		setSelectedAnswerIdx(idx);
 	};
 
 	return (
@@ -56,11 +38,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 								type="button"
 								onClick={handleClickAnswer}
 								value={filterHtml(answer)}
-								className={`inline-block cursor-pointer text-wrap text-left ${
-									selectedAnswerIdx === idx
-										? "hover:underline underline-offset-4"
-										: "hover:underline"
-								}`}
+								className="inline-block cursor-pointer text-wrap text-left hover:underline"
 								data-idx={idx}
 							/>
 						</div>
@@ -73,7 +51,7 @@ const QuestionCard: React.FC<QuestionCardProps> = ({
 						선택 답안:
 						<span className="ml-2 font-bold">
 							{userState[questionNum]
-								? `${questionNum + 1}. ${userState[questionNum].selectedAnswer}`
+								? userState[questionNum].selectedAnswer
 								: "-"}
 						</span>
 					</p>

@@ -1,14 +1,24 @@
-import { Dot, PartyPopper } from "lucide-react";
+import { ArrowLeft, Dot, PartyPopper } from "lucide-react";
 import { UserState } from "../types/Question";
 import { filterHtml } from "../util";
 
 interface ResultProps {
 	scores: number[];
 	userState: UserState[];
+	restartQuiz: () => void;
+	retryQuiz: () => void;
 }
 
-const Result: React.FC<ResultProps> = ({ scores, userState }) => {
+const Result: React.FC<ResultProps> = ({
+	scores,
+	userState,
+	restartQuiz,
+	retryQuiz,
+}) => {
 	const totalScore = scores.reduce((acc, curr) => acc + curr);
+	const handleRetryQuiz = () => {
+		retryQuiz();
+	};
 
 	return (
 		<div>
@@ -39,16 +49,21 @@ const Result: React.FC<ResultProps> = ({ scores, userState }) => {
 							<Dot />
 							선택한 답: {filterHtml(answer.selectedAnswer)}
 						</p>
-
-						{!answer.correct && (
-							<p className="flex">
-								<Dot />
-								정답: {filterHtml(answer.correctAnswer)}
-							</p>
-						)}
 					</li>
 				))}
 			</ul>
+			<div className="flex gap-4 justify-center border-t-2 mt-5 pt-4 px-5">
+				<button className="flex w-20" onClick={handleRetryQuiz}>
+					<ArrowLeft className="scale-75" />
+					다시풀기
+				</button>
+				<button
+					className="w-20 rounded-md bg-slate-900 text-white hover:bg-slate-700"
+					onClick={restartQuiz}
+				>
+					처음으로
+				</button>
+			</div>
 		</div>
 	);
 };

@@ -3,13 +3,13 @@ import {
 	ArrowRightCircleIcon,
 	EditIcon,
 } from "lucide-react";
-import { throttledFetchQuestions } from "./API";
+import { fetchQuestions } from "./API";
 import { useState } from "react";
 import { Difficulty, Question, UserState } from "./types/Question";
 import QuestionCard from "./components/QuestionCard";
 import Result from "./components/Result";
 
-const TOTAL_QUESTIONS = 3;
+const TOTAL_QUESTIONS = 10;
 
 function App() {
 	const [questions, setQuestions] = useState<Question[]>([]);
@@ -29,10 +29,7 @@ function App() {
 	const startQuiz = async () => {
 		setLoading(true);
 		try {
-			const newQuestions = await throttledFetchQuestions(
-				TOTAL_QUESTIONS,
-				level
-			);
+			const newQuestions = await fetchQuestions(TOTAL_QUESTIONS, level);
 			setQuestions(newQuestions);
 		} catch (error) {
 			console.error("Error fetching questions:", error);
@@ -43,6 +40,21 @@ function App() {
 			setScores(Array.from({ length: TOTAL_QUESTIONS }, () => 0));
 			setErrorMessage("");
 		}
+	};
+
+	const restartQuiz = () => {
+		setQuestions([]);
+		setUserState([]);
+		setQuestionNum(0);
+		setScores(Array.from({ length: TOTAL_QUESTIONS }, () => 0));
+		setAnswered(Array.from({ length: TOTAL_QUESTIONS }, () => false));
+		setFinish(false);
+	};
+
+	const retryQuiz = () => {
+		setQuestionNum(0);
+		setScores(Array.from({ length: TOTAL_QUESTIONS }, () => 0));
+		setFinish(false);
 	};
 
 	const checkAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
@@ -120,6 +132,7 @@ function App() {
 						<div className="flex items-center justify-center">
 							{Object.values(Difficulty).map((lv: Difficulty) => (
 								<button
+									key={lv}
 									className={`font-bold mx-3 hover:underline underline-offset-4 ${
 										level === lv ? "underline" : ""
 									}`}
@@ -130,7 +143,7 @@ function App() {
 							))}
 						</div>
 						<button
-							className="mt-5 w-20 rounded-md bg-slate-900 text-white hover:bg-slate-800"
+							className="mt-5 w-20 text-lg rounded-md bg-slate-900 text-white hover:bg-slate-700"
 							onClick={startQuiz}
 						>
 							START
@@ -196,7 +209,14 @@ function App() {
 						)}
 					</div>
 				)}
-				{!loading && finish && <Result scores={scores} userState={userState} />}
+				{!loading && finish && (
+					<Result
+						scores={scores}
+						userState={userState}
+						restartQuiz={restartQuiz}
+						retryQuiz={retryQuiz}
+					/>
+				)}
 			</div>
 		</main>
 	);
