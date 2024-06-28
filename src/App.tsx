@@ -10,6 +10,7 @@ const TOTAL_QUESTIONS = 3;
 function App() {
 	const [questions, setQuestions] = useState<Question[]>([]);
 	const [questionNum, setQuestionNum] = useState(0);
+	const [level, setLevel] = useState<Difficulty>(Difficulty.EASY);
 	const [loading, setLoading] = useState(false);
 	const [userState, setUserState] = useState<UserState[]>([]);
 	const [finish, setFinish] = useState(false);
@@ -26,7 +27,7 @@ function App() {
 		try {
 			const newQuestions = await throttledFetchQuestions(
 				TOTAL_QUESTIONS,
-				Difficulty.EASY
+				level
 			);
 			setQuestions(newQuestions);
 		} catch (error) {
@@ -99,13 +100,26 @@ function App() {
 		setFinish(true);
 	};
 
+	const selectDifficulty = (level: Difficulty) => {
+		setLevel(level);
+	};
+
 	return (
 		<main>
 			<h1>REACT QUIZ</h1>
+
 			{!(questions.length > 0) && !loading && !finish && (
-				<button className="start-btn" onClick={startQuiz}>
-					START
-				</button>
+				<div>
+					<div>
+						<h2>난이도를 선택하세요</h2>
+						{Object.values(Difficulty).map((level: Difficulty) => (
+							<button onClick={() => selectDifficulty(level)}>{level}</button>
+						))}
+					</div>
+					<button className="start-btn" onClick={startQuiz}>
+						START
+					</button>
+				</div>
 			)}
 
 			{loading && <p>퀴즈 불러오는 중...</p>}
