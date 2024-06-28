@@ -49,12 +49,14 @@ function App() {
 		setScores(Array.from({ length: TOTAL_QUESTIONS }, () => 0));
 		setAnswered(Array.from({ length: TOTAL_QUESTIONS }, () => false));
 		setFinish(false);
+		setErrorMessage("");
 	};
 
 	const retryQuiz = () => {
 		setQuestionNum(0);
 		setScores(Array.from({ length: TOTAL_QUESTIONS }, () => 0));
 		setFinish(false);
+		setErrorMessage("");
 	};
 
 	const checkAnswer = (e: React.MouseEvent<HTMLInputElement>) => {
