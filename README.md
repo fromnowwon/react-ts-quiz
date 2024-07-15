@@ -44,9 +44,9 @@ npm run dev
 
 ## 사용 기술
 
-- React.js
-- TypeScript
-- Tailwind CSS
+- **프론트엔드:** React.js, TypeScript
+- **UI 프레임워크**: Tailwind CSS
+- **배포:** AWS Amplify
 
 ## 폴더 및 파일 구조
 
